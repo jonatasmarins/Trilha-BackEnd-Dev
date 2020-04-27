@@ -1,20 +1,38 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using NivelBasico.Domain.Enums;
 using NivelBasico.Domain.Models;
 using NivelBasico.Domain.Services.Interfaces;
 using NivelBasico.Domain.ValuesObject;
+using NivelBasico.Repositories;
+using NivelBasico.Repositories.Interfaces;
 
 namespace NivelBasico.Domain.Services
 {
     public class UserService : IUserService
     {
+        private readonly IUserRepository _repository;
+
+        public UserService()
+        {
+            _repository = new UserRepository();
+        }
+
         public void Add(User user)
         {
-            if (user.Validator == null)
+            User userSearch = getUserBydocument(user.document.ToString());
+
+            if (userSearch != null)
             {
-                Program.users.Add(user);
-                Console.WriteLine($"O Cliente {user.GetName() } adicionado com sucesso");
+                Console.WriteLine($"O usuário {user.GetName()} - {user.GetDocumentNumber()} já existe");
+                return;
+            }
+
+            if (user.Validator.IsValid())
+            {
+                _repository.Add(user);
+                Console.WriteLine($"O usuário {user.GetName() } adicionado com sucesso");
             }
             else
             {
@@ -22,11 +40,10 @@ namespace NivelBasico.Domain.Services
             }
         }
 
-        public void Update(string cpf)
+        public void Update(string document)
         {
             int digit = 0;
-
-            User user = getUserByCPF(cpf);
+            User user = getUserBydocument(document);
 
             if (user == null)
             {
@@ -37,13 +54,13 @@ namespace NivelBasico.Domain.Services
             var option = ShowMenuUpdate();
             if (int.TryParse(option.ToString(), out digit))
             {
-                if (digit == 9)
+                if (digit == Program.SAIR)
                 {
                     return;
                 }
 
                 OptionSelected(digit, user);
-                Update(cpf);
+                Update(document);
             }
             else
             {
@@ -52,9 +69,9 @@ namespace NivelBasico.Domain.Services
             };
         }
 
-        public void Delete(string cpf)
+        public void Delete(string document)
         {
-            User user = getUserByCPF(cpf);
+            User user = getUserBydocument(document);
 
             if (user == null)
             {
@@ -62,36 +79,36 @@ namespace NivelBasico.Domain.Services
             }
             else
             {
-                Program.users.Remove(user);
+                _repository.Delete(document);
                 Console.WriteLine("Usuário Removido com sucesso!");
             }
         }
 
-        public void Get(string cpf)
+        public User Get(string document)
         {
-            var user = getUserByCPF(cpf);
-            Console.WriteLine(
-                string.Concat(
-                    $"Usuário: {user.GetName()}, CPF: {user.GetDocumentNumber()}, ",
-                    $"Idade: {user.GetYearsOld()}, Contato: {user.GetPhone()}, ",
-                    $"Email: {user.GetEmail()}, Endereço: {user.GetAddress()} "
-                )
-            );
-        }
+            User user = getUserBydocument(document);
 
-        public void GetAll()
-        {
-            Console.WriteLine($"Existem {Program.users?.Count} usuário(s) cadastrado(s)");
-            foreach (var item in Program.users)
+            if (user != null)
             {
                 Console.WriteLine(
                     string.Concat(
-                        $"Usuário: {item.GetName()}, CPF: {item.GetDocumentNumber()}, ",
-                        $"Idade: {item.GetYearsOld()}, Contato: {item.GetPhone()}, ",
-                        $"Email: {item.GetEmail()}, Endereço: {item.GetAddress()} "
+                        $"Usuário: {user.GetName()}, document: {user.GetDocumentNumber()}, ",
+                        $"Idade: {user.GetYearsOld()}, Contato: {user.GetPhone()}, ",
+                        $"Email: {user.GetEmail()}, Endereço: {user.GetAddress()} "
                     )
                 );
             }
+            else
+            {
+                Console.WriteLine("Usuário não encontrado!");
+            }
+
+            return user;
+        }
+
+        public IList<User> GetAll()
+        {
+            return _repository.GetAll();
         }
 
         private char ShowMenuUpdate()
@@ -126,20 +143,16 @@ namespace NivelBasico.Domain.Services
             switch (digit)
             {
                 case (int)UserPropriety.Name:
-                    if(!SetName(result, user)) 
-                        return;
+                    user.SetName(new Name(result));
                     break;
                 case (int)UserPropriety.YearsOld:
-                    if(!SetYearsOld(result, user))
-                        return;
+                    user.SetYearsOld(new YearsOld(result));
                     break;
                 case (int)UserPropriety.Email:
-                    if(!SetEmail(result, user))
-                        return;
+                    user.SetEmail(new Email(result));
                     break;
                 case (int)UserPropriety.Phone:
-                    if(!SetPhone(result, user))
-                        return;
+                    user.SetPhone(new Phone(result));
                     break;
                 case (int)UserPropriety.Address:
                     user.SetAddress(result);
@@ -154,85 +167,16 @@ namespace NivelBasico.Domain.Services
             }
             else
             {
+                _repository.Update(user);
                 Console.WriteLine("Usuário atualizado com sucesso"); ;
             }
         }
 
-        private User getUserByCPF(string cpf)
+        private User getUserBydocument(string document)
         {
-            User user = Program.users.Where(
-               x => x.document.ToString() == cpf
-           ).FirstOrDefault();
+            User user = _repository.Get(document);
 
             return user;
-        }
-
-        private bool SetPhone(string phoneNumber, User user)
-        {
-            bool result = true;
-            Phone phone = new Phone(phoneNumber);
-            if (phone.Validator.IsValid())
-            {
-                user.SetPhone(phone);
-            }
-            else
-            {
-                phone.Validator.GetMessages();
-                result = false;
-            }
-
-            return result;
-        }
-
-        private bool SetEmail(string address, User user)
-        {
-            bool result = true;
-            Email email = new Email(address);
-            if (email.Validator.IsValid())
-            {
-                user.SetEmail(email);
-            }
-            else
-            {
-                email.Validator.GetMessages();
-                result = false;
-            }
-
-            return result;
-        }
-
-        private bool SetYearsOld(string yearsOld, User user)
-        {
-            bool result = true;
-            YearsOld years = new YearsOld(yearsOld);
-            if (years.Validator.IsValid())
-            {
-                user.SetYearsOld(years);
-            }
-            else
-            {
-                years.Validator.GetMessages();
-                result = false;
-            }
-
-            return result;
-        }
-
-        private bool SetName(string value, User user)
-        {
-            bool result = true;
-            Name name = new Name(value);
-            if (name.Validator.IsValid())
-            {
-                user.SetName(name);
-            }
-            else
-            {
-                name.Validator.GetMessages();
-                result = false;
-            }
-
-            return result;
         }
     }
 }

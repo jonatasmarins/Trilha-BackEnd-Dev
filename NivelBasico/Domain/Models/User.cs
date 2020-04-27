@@ -15,6 +15,7 @@ namespace NivelBasico.Domain.Models
             this.phone = phone;
             this.address = address;
 
+            Validator = new Message(string.Empty);
             this.Validate();
         }
 

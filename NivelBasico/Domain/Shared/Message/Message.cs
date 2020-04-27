@@ -84,7 +84,10 @@ namespace NivelBasico.Domain.Shared.Message
         }
 
         public bool IsValid() {
-            if(SubMessages != null && SubMessages?.Count > 0 && !string.IsNullOrWhiteSpace(Title)) {
+            bool existSubMessage = SubMessages != null && SubMessages?.Count > 0;
+            bool existMessage = Messages != null && Messages?.Count > 0;
+
+            if((existSubMessage || existMessage) && !string.IsNullOrWhiteSpace(Title)) {
                 return false;
             } else {
                 return true;

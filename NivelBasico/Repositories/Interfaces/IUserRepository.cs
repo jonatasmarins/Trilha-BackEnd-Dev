@@ -1,14 +1,14 @@
 using System.Collections.Generic;
 using NivelBasico.Domain.Models;
 
-namespace NivelBasico.Domain.Services.Interfaces
+namespace NivelBasico.Repositories.Interfaces
 {
-    public interface IUserService
+    public interface IUserRepository
     {
         IList<User> GetAll();
         User Get(string document);
         void Add(User user);
-        void Update(string document);
+        void Update(User user);
         void Delete(string document);
     }
 }

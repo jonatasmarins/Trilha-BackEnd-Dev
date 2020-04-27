@@ -9,8 +9,7 @@ namespace NivelBasico
 {
     static class Program
     {
-        private const int SAIR = 9;
-        public static IList<User> users = new List<User>();
+        public const int SAIR = 9;
 
         static void Main()
         {
@@ -61,7 +60,19 @@ namespace NivelBasico
         static void GetAllUser()
         {
             IUserService service = new UserService();
-            service.GetAll();
+            IList<User> users = service.GetAll();
+
+            Console.WriteLine($"Existem {users?.Count} usuário(s) cadastrado(s)");
+            foreach (var item in users)
+            {
+                Console.WriteLine(
+                    string.Concat(
+                        $"Usuário: {item.GetName()}, document: {item.GetDocumentNumber()}, ",
+                        $"Idade: {item.GetYearsOld()}, Contato: {item.GetPhone()}, ",
+                        $"Email: {item.GetEmail()}, Endereço: {item.GetAddress()} "
+                    )
+                );
+            }
         }
 
         static void GetAUserByDocument()
@@ -69,19 +80,15 @@ namespace NivelBasico
             IUserService service = new UserService();
             Console.WriteLine("Entre com o númerdo do cpf: ");
             string document = Console.ReadLine();
-            service.Get(document);
+
+            if (isDocumentNotNull(document))
+                service.Get(document);
         }
 
         static void AddUser()
         {
             IUserService service = new UserService();
-
-            if(users?.Count > 0) 
-            {
-                Console.WriteLine("Todos os usuários já foram adicionados");
-                return;
-            }
-                
+            IList<User> users = service.GetAll();
 
             User user = new User(
                new Name("Jonatas Marins"),
@@ -145,7 +152,9 @@ namespace NivelBasico
 
             Console.WriteLine("Entre com o númerdo do cpf: ");
             string document = Console.ReadLine();
-            service.Update(document);
+
+            if (isDocumentNotNull(document))
+                service.Update(document);
         }
 
         static void DeleteUser()
@@ -154,7 +163,21 @@ namespace NivelBasico
 
             Console.WriteLine("Entre com o númerdo do cpf: ");
             string document = Console.ReadLine();
-            service.Delete(document);
+
+            if (isDocumentNotNull(document))
+                service.Delete(document);
+        }
+
+        static bool isDocumentNotNull(string document)
+        {
+            bool isValid = true;
+            if (string.IsNullOrEmpty(document))
+            {
+                Console.WriteLine("É necessário entrar com o número do documento");
+                isValid = false;
+            }
+
+            return isValid;
         }
     }
 }

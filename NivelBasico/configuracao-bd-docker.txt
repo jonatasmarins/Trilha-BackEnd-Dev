@@ -1,0 +1,17 @@
+docker exec -it mydb /opt/mssql-tools/bin/sqlcmd -S localhost -U sa
+PassWord: Teste1234
+ou conectar pelo plugin do visual studio code 
+	hostName: localhost, 1401
+	user: sa
+	pass: Teste1234
+
+
+
+CREATE DATABASE mydatabase
+GO
+
+USE [mydatabase]
+GO
+
+CREATE TABLE Users (Id int not null identity, Name varchar(150) not null, YearsOld varchar(4), Document varchar(11) not null unique, Email varchar(150), Phone varchar(11), Address varchar(150))
+GO
