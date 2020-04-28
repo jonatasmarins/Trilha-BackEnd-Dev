@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using NivelBasico.Domain.Enums;
 using NivelBasico.Domain.Models;
 using NivelBasico.Domain.Services.Interfaces;
@@ -110,6 +111,11 @@ namespace NivelBasico.Domain.Services
         {
             return _repository.GetAll();
         }
+        
+        public async Task<IList<User>> GetAllAsync()
+        {
+            return await _repository.GetAllAsync();
+        } 
 
         private char ShowMenuUpdate()
         {

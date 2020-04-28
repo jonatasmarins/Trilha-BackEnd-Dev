@@ -1,0 +1,38 @@
+Existe 5 usuário(s) cadastrado(s)
+
+Nome: Thais Belli
+CPF: 41800055588
+Idade: 27
+Email: thais@gmail.com
+Contato: 19996969696
+Endereço: Rua das orquideas, 121 - Indaiatuba/SP
+
+Nome: Marcos Alonso
+CPF: 41841841888
+Idade: 27
+Email: marcos@gmail.com
+Contato: 19669696666
+Endereço: Rua da rosaria, 121 - São Paulo/SP
+
+Nome: Carlos Feitosa
+CPF: 44184145888
+Idade: 35
+Email: carlos@gmail.com
+Contato: 19669776666
+Endereço: Rua da rosaria, 121 - São Paulo/SP
+
+Nome: Felipe Artur
+CPF: 41841841778
+Idade: 25
+Email: felipe@gmail.com
+Contato: 19665896668
+Endereço: Rua da dinamarca, 121 - São Paulo/SP
+
+Nome: Marcos Luiz
+CPF: 41841841887
+Idade: 17
+Email: luiz@gmail.com
+Contato: 19669696655
+Endereço: Rua da jamaica, 121 - São Paulo/SP
+
+

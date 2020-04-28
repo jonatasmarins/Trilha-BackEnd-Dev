@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Threading.Tasks;
 using NivelBasico.Domain.Models;
 using NivelBasico.Domain.ValuesObject;
 using NivelBasico.Repositories.Interfaces;
@@ -10,6 +11,8 @@ namespace NivelBasico.Repositories
     public class UserRepository : IUserRepository
     {
         private IConnection _connection;
+        private const string QUERY_GET_ALL = @"SELECT * FROM users";
+
         public void Add(User user)
         {
             using (_connection = new Connection())
@@ -53,7 +56,8 @@ namespace NivelBasico.Repositories
                 sqlCommand.Parameters.AddWithValue("@document", document);
 
                 SqlDataReader reader = _connection.ExecuteReader(sqlCommand);
-                while(reader.Read()) {
+                while (reader.Read())
+                {
                     user = new User(
                         new Name(reader.GetString(reader.GetOrdinal("name"))),
                         new YearsOld(reader.GetString(reader.GetOrdinal("yearsOld"))),
@@ -62,7 +66,7 @@ namespace NivelBasico.Repositories
                         new Phone(reader.GetString(reader.GetOrdinal("phone"))),
                         reader.GetString(reader.GetOrdinal("address"))
                     );
-                }                
+                }
             }
 
             return user;
@@ -74,27 +78,38 @@ namespace NivelBasico.Repositories
 
             using (_connection = new Connection())
             {
-                string queryString = @"SELECT * FROM users";
-
-                SqlCommand sqlCommand = new SqlCommand(queryString, _connection.GetConnection());
-
+                SqlCommand sqlCommand = new SqlCommand(QUERY_GET_ALL, _connection.GetConnection());
                 SqlDataReader reader = _connection.ExecuteReader(sqlCommand);
-                while(reader.Read()) {
-                    User user = new User(
-                        new Name(reader.GetString(reader.GetOrdinal("name"))),
-                        new YearsOld(reader.GetString(reader.GetOrdinal("yearsOld"))),
-                        new Cpf(reader.GetString(reader.GetOrdinal("document"))),
-                        new Email(reader.GetString(reader.GetOrdinal("email"))),
-                        new Phone(reader.GetString(reader.GetOrdinal("phone"))),
-                        reader.GetString(reader.GetOrdinal("address"))
-                    );
-
+                
+                while (reader.Read())
+                {
+                    User user = ReadUserSqlCommand(reader);
                     users.Add(user);
-                }                
+                }
             }
 
             return users;
         }
+
+        public async Task<IList<User>> GetAllAsync()
+        {
+            IList<User> users = new List<User>();
+
+            using (_connection = new Connection())
+            {
+                SqlCommand sqlCommand = new SqlCommand(QUERY_GET_ALL, _connection.GetConnection());
+                SqlDataReader reader = await _connection.ExecuteReaderAsync(sqlCommand);
+
+                while (reader.Read())
+                {
+                    User user = ReadUserSqlCommand(reader);
+                    users.Add(user);
+                }
+            }
+
+            return users;
+        }
+
 
         public void Update(User user)
         {
@@ -120,6 +135,20 @@ namespace NivelBasico.Repositories
 
                 _connection.Execute(sqlCommand);
             }
+        }
+
+        private User ReadUserSqlCommand(SqlDataReader reader)
+        {
+            User user = new User(
+                new Name(reader.GetString(reader.GetOrdinal("name"))),
+                new YearsOld(reader.GetString(reader.GetOrdinal("yearsOld"))),
+                new Cpf(reader.GetString(reader.GetOrdinal("document"))),
+                new Email(reader.GetString(reader.GetOrdinal("email"))),
+                new Phone(reader.GetString(reader.GetOrdinal("phone"))),
+                reader.GetString(reader.GetOrdinal("address"))
+            );
+
+            return user;
         }
     }
 }

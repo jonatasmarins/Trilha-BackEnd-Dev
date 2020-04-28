@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Threading.Tasks;
 
 namespace NivelBasico.Repositories.Interfaces.Connection
 {
@@ -32,6 +33,11 @@ namespace NivelBasico.Repositories.Interfaces.Connection
         public SqlDataReader ExecuteReader(SqlCommand sqlCommand)
         {
             return sqlCommand.ExecuteReader();
+        }
+
+        public async Task<SqlDataReader> ExecuteReaderAsync(SqlCommand sqlCommand)
+        {
+            return await sqlCommand.ExecuteReaderAsync();
         }
 
         public void Dispose()

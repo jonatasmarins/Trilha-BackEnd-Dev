@@ -1,5 +1,6 @@
 using System;
 using System.Data.SqlClient;
+using System.Threading.Tasks;
 
 namespace NivelBasico.Repositories.Interfaces.Connection
 {
@@ -8,5 +9,6 @@ namespace NivelBasico.Repositories.Interfaces.Connection
          SqlConnection GetConnection();
          void Execute(SqlCommand sqlCommand);
          SqlDataReader ExecuteReader(SqlCommand sqlCommand);
+         Task<SqlDataReader> ExecuteReaderAsync(SqlCommand sqlCommand);
     }
 }
