@@ -22,6 +22,8 @@ namespace Nivel1.Controllers
         public async Task<IActionResult> Get()
         {
             var result = await _userService.Get();
+
+            
             return Response(result);
         }
 

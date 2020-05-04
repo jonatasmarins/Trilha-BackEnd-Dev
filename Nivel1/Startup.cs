@@ -9,8 +9,11 @@ using Microsoft.OpenApi.Models;
 using Nivel1.Data.Context;
 using Nivel1.Data.UnitOfWork;
 using Nivel1.Data.UnitOfWork.Interfaces;
+using Nivel1.Domain.ExternalServices.Marvel;
+using Nivel1.Domain.ExternalServices.Marvel.Interfaces;
 using Nivel1.Domain.Services;
 using Nivel1.Domain.Services.Interfaces;
+using Nivel1.Shared.Configuration;
 using Nivel1.Shared.Mappers;
 
 namespace Nivel1
@@ -33,8 +36,8 @@ namespace Nivel1
             services.AddAutoMapper(c => c.AddProfile<ProfileMapper>(), typeof(Startup));
 
             services.AddTransient<IUserService, UserService>();
-
             services.AddTransient<IUnitOfWork, UnitOfWork>();
+            services.AddTransient<IComicExternalService, ComicExternalService>();
 
             services.AddSwaggerGen(c =>
             {
@@ -46,6 +49,8 @@ namespace Nivel1
                         Description = "Exemplo de um Web Api"
                     });
             });
+
+            services.Configure<MarvelComicsAPIConfig>(Configuration.GetSection("MarvelComicsAPI"));
 
             services.AddControllers();
         }
