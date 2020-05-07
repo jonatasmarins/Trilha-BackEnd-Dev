@@ -5,7 +5,7 @@ namespace Nivel1.Domain.ValueObject
         protected Cpf() { }
         public Cpf(string value)
         {
-            this.Value = value.Replace(".", "").Replace("-", "");
+            this.Value = value?.Replace(".", "").Replace("-", "");
         }
 
         public string Value { get; private set;}

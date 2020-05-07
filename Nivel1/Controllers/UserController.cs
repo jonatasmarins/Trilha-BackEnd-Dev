@@ -1,6 +1,8 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Nivel1.Domain.Services.Interfaces;
+using Nivel1.LoggingEvents;
 using Nivel1.Models;
 using Nivel1.Models.Responses;
 using Nivel1.Shared.Models;
@@ -13,9 +15,14 @@ namespace Nivel1.Controllers
     public class UserController : BaseController
     {
         protected readonly IUserService _userService;
-        public UserController(IUserService userService)
+        protected readonly ILogger _logger;
+        public UserController(
+            IUserService userService,
+            ILogger<UserController> logger
+        )
         {
             _userService = userService;
+            _logger = logger;
         }
 
         [HttpGet("")]
@@ -23,7 +30,7 @@ namespace Nivel1.Controllers
         {
             var result = await _userService.Get();
 
-            
+
             return Response(result);
         }
 
@@ -32,6 +39,7 @@ namespace Nivel1.Controllers
         {
             if (!ModelState.IsValid)
             {
+                _logger.LogInformation(LoggingEvent.GetByDocument, "Valor do Cpf é inválido: {document}", document);
                 return Response(new ResultResponse("Valor Inválido"));
             }
 
@@ -44,6 +52,7 @@ namespace Nivel1.Controllers
         {
             if (!ModelState.IsValid)
             {
+                _logger.LogInformation(LoggingEvent.Create, "Usuário da request inválido");
                 return Response(new ResultResponse("Usuário de entrada Inválido"));
             }
 
@@ -56,6 +65,7 @@ namespace Nivel1.Controllers
         {
             if (!ModelState.IsValid)
             {
+                _logger.LogInformation(LoggingEvent.Update, "Usuário da request inválido");
                 return Response(new ResultResponse("Usuário de entrada Inválido"));
             }
 
@@ -68,6 +78,7 @@ namespace Nivel1.Controllers
         {
             if (!ModelState.IsValid)
             {
+                _logger.LogInformation(LoggingEvent.Delete, "Valor do Cpf é inválido: {document}", document);
                 return Response(new ResultResponse("Valor Inválido"));
             }
 

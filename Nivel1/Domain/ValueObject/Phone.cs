@@ -8,7 +8,7 @@ namespace Nivel1.Domain.ValueObject
 
         public Phone(string value)
         {
-            this.Value = value.Replace(" ", "").Replace("-", "").Replace("(", "").Replace(")", "");
+            this.Value = value?.Replace(" ", "").Replace("-", "").Replace("(", "").Replace(")", "");
         }
 
         public override string ToString()

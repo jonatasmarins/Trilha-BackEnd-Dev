@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.Extensions.Logging;
 using Nivel1.Data.UnitOfWork.Interfaces;
 using Nivel1.Domain.Models;
 using Nivel1.Domain.Models.Validators;
 using Nivel1.Domain.Services.Interfaces;
 using Nivel1.Domain.ValueObject;
 using Nivel1.Domain.ValueObject.Validators;
+using Nivel1.LoggingEvents;
 using Nivel1.Models;
 using Nivel1.Models.Responses;
 using Nivel1.Shared.Models;
@@ -18,10 +20,16 @@ namespace Nivel1.Domain.Services
     {
         protected readonly IUnitOfWork _unitOfWork;
         protected readonly IMapper _mapper;
-        public UserService(IUnitOfWork unitOfWork, IMapper mapper)
+        protected readonly ILogger _logger;
+        public UserService(
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            ILogger<UserService> logger
+        )
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<IResultResponse> Create(UserCreateRequest request)
@@ -37,13 +45,21 @@ namespace Nivel1.Domain.Services
             {
                 User userExist = await _unitOfWork.UserRepository.GetByDocument(user.Document.Value);
                 if (userExist == null)
+                {
                     await _unitOfWork.UserRepository.Create(user);
+                    _logger.LogInformation(LoggingEvent.Create, "Usuário criado com sucesso");
+                }
                 else
+                {
                     response.AddMessage($"Usuário com o Cpf {request.Document} já está cadastrado");
+                    _logger.LogInformation(LoggingEvent.Create, $"Usuário com o Cpf {request.Document} já está cadastrado");
+                }
+
             }
             else
             {
                 response.AddMessage(result.Errors);
+                _logger.LogInformation(LoggingEvent.Create, $"Encontrado algum erro de validação");
             }
 
             return response;
@@ -59,13 +75,20 @@ namespace Nivel1.Domain.Services
             {
                 User user = await _unitOfWork.UserRepository.GetByDocument(document);
                 if (user != null)
+                {
                     await _unitOfWork.UserRepository.Delete(user);
+                    _logger.LogInformation(LoggingEvent.Delete, "Usuário deletado com sucesso");
+                }
                 else
+                {
                     response.AddMessage($"Usuário com o Cpf {document} não encontrado");
+                    _logger.LogInformation(LoggingEvent.Delete, $"Usuário com o Cpf {document} não encontrado");
+                }
             }
             else
             {
                 response.AddMessage(result.Errors);
+                _logger.LogInformation(LoggingEvent.Delete, $"Encontrado algum erro de validação");
             }
 
             return response;
@@ -76,11 +99,17 @@ namespace Nivel1.Domain.Services
             IResultResponse<IList<UserResponse>> response = new ResultResponse<IList<UserResponse>>();
             IList<User> users = await _unitOfWork.UserRepository.Get();
 
-            if (users == null || users?.Count == 0)                
+            if (users == null || users?.Count == 0)
+            {
                 response.AddMessage("Não existe nenhum usuário cadastrado");
+                _logger.LogInformation(LoggingEvent.GetAll, "Nenhum usuário cadastrado");
+            }
             else
+            {
                 response.Value = _mapper.Map<IList<UserResponse>>(users);
-                
+            }
+
+
 
             return response;
         }
@@ -95,13 +124,17 @@ namespace Nivel1.Domain.Services
             {
                 User user = await _unitOfWork.UserRepository.GetByDocument(document);
                 if (user == null)
+                {
                     response.AddMessage($"Usuário com o Cpf {document} não encontrado");
+                    _logger.LogInformation(LoggingEvent.GetByDocument, $"Usuário com o Cpf {document} não encontrado");
+                }
 
                 response.Value = _mapper.Map<UserResponse>(user);
             }
             else
             {
                 response.AddMessage(result.Errors);
+                _logger.LogInformation(LoggingEvent.GetByDocument, $"Encontrado algum erro de validação");
             }
 
             return response;
@@ -115,6 +148,7 @@ namespace Nivel1.Domain.Services
             if (user == null)
             {
                 response.AddMessage("Usuário não encontrado");
+                _logger.LogInformation(LoggingEvent.Update, $"Usuário não encontrado");
                 return response;
             }
 
@@ -130,10 +164,12 @@ namespace Nivel1.Domain.Services
             if (result.IsValid)
             {
                 await _unitOfWork.UserRepository.Update(user);
+                _logger.LogInformation(LoggingEvent.Update, $"Usuário atualizado com sucesso");
             }
             else
             {
                 response.AddMessage(result.Errors);
+                _logger.LogInformation(LoggingEvent.Update, $"Encontrado algum erro de validação");
             }
 
             return response;
