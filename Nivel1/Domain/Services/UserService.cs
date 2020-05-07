@@ -35,7 +35,11 @@ namespace Nivel1.Domain.Services
 
             if (result.IsValid)
             {
-                await _unitOfWork.UserRepository.Create(user);
+                User userExist = await _unitOfWork.UserRepository.GetByDocument(user.Document.Value);
+                if (userExist == null)
+                    await _unitOfWork.UserRepository.Create(user);
+                else
+                    response.AddMessage($"Usuário com o Cpf {request.Document} já está cadastrado");
             }
             else
             {

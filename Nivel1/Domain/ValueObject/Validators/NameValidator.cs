@@ -6,7 +6,8 @@ namespace Nivel1.Domain.ValueObject.Validators
     {
         public NameValidator()
         {
-            RuleFor(x => x.Value.ToString()).NotEmpty().NotNull().WithMessage("Nome é obrigatório");
+            RuleFor(x => x.Value.ToString()).NotEmpty().WithMessage("Nome é obrigatório")
+            .NotNull().WithMessage("Nome é obrigatório");
         }
     }
 }

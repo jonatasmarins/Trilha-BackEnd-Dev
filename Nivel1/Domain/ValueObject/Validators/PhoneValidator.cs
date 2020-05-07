@@ -8,8 +8,10 @@ namespace Nivel1.Domain.ValueObject.Validators
         public PhoneValidator()
         {
             RuleFor(x => x.Value)
-                .MaximumLength(12).WithMessage("Quantidade de caracteres inválido")
-                .Must(x => x.IsNumber()).WithMessage("Telefone inválido");
+                .MaximumLength(11).WithMessage("Quantidade de caracteres inválido")
+                .MinimumLength(10).WithMessage("Quantidade de caracteres inválido")
+                .Must(x => x.IsNumber()).WithMessage("Contato inválido")
+                .Must(x => !x.StartsWith("0")).WithMessage("Formato inválido - (99) 9999-9999 ou (99) 9 9999-9999");
         }
 
         

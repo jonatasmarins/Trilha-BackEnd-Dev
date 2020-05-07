@@ -1,4 +1,5 @@
 using FluentValidation;
+using System;
 
 namespace Nivel1.Domain.ValueObject.Validators
 {
@@ -7,9 +8,11 @@ namespace Nivel1.Domain.ValueObject.Validators
         public CpfValidator()
         {
             RuleFor(x => x.Value)
-                .NotEmpty().NotEmpty().WithMessage("Cpf é obrigatório")
+                .NotEmpty().WithMessage("Cpf é obrigatório")
+                .NotNull().WithMessage("Cpf é obrigatório")
                 .MaximumLength(11).WithMessage("Quantidade de caracteres inválido")
-                .MinimumLength(11).WithMessage("Quantidade de caracteres inválido");
+                .MinimumLength(11).WithMessage("Quantidade de caracteres inválido")
+                .Must(x => x.IsNumber()).WithMessage("Cpf so aceita valor numéricos");
         }
     }
 }
