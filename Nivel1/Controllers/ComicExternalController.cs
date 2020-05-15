@@ -18,11 +18,10 @@ namespace Nivel1.Controllers
             _comicExternalService = comicExternalService;
         }
 
-        [HttpGet]
-        public IActionResult Get()
+        [HttpPost("Initialize")]
+        public async Task<IActionResult> Initialize()
         {
-            IResultResponse<IList<Comic>> resultResponse = null;
-            resultResponse = _comicExternalService.Get();
+            var resultResponse = await _comicExternalService.Initialize();
 
             return Response(resultResponse);
         }

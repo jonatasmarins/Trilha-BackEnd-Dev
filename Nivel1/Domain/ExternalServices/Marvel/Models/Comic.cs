@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Nivel1.Domain.ExternalServices.Marvel.Models;
+using Nivel1.Domain.Models.Interfaces;
 
 namespace Nivel1.Domain.ExternalServices.Models
 {
@@ -6,15 +8,17 @@ namespace Nivel1.Domain.ExternalServices.Models
     {
         public Comic()
         {
-            Characters = new List<Character>();
-            Creators = new List<Creator>();
+            Characters = new List<ComicCharacter>();
+            Creators = new List<ComicCreator>();
         }
-        public int Id { get; set; }
+
+        public int ComicID { get; set; }
+        public int Code { get; set; }
         public string Title { get; set; }
         public string Ean { get; set; }
         public int PageCount { get; set; }
         public string UrlWiki { get; set; }
-        public IList<Character> Characters { get; set; }
-        public IList<Creator> Creators { get; set; }
+        public IList<ComicCharacter> Characters { get; set; }
+        public IList<ComicCreator> Creators { get; set; }
     }
 }

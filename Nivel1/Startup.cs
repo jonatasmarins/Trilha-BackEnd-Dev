@@ -36,8 +36,8 @@ namespace Nivel1
             services.AddAutoMapper(c => c.AddProfile<ProfileMapper>(), typeof(Startup));
 
             services.AddTransient<IUserService, UserService>();
-            services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IComicExternalService, ComicExternalService>();
+            services.AddTransient<IUnitOfWork, UnitOfWork>();
 
             services.AddSwaggerGen(c =>
             {
