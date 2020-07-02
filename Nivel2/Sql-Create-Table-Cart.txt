@@ -1,0 +1,8 @@
+USE [mydatabase]
+GO
+
+CREATE TABLE Cart (Id int not null identity primary key, ComicId int not null, UserId int not null, Quantity int not null, FOREIGN KEY(ComicId) References Comic(Id), FOREIGN KEY(UserId) References [User](Id))
+GO
+
+CREATE INDEX IDX_CART_USER_COMIC ON Cart(ComicId, UserID);
+GO
